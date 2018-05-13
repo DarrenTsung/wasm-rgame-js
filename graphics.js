@@ -10,7 +10,7 @@ const DRAW_ACTION_COLOR_SIZE = 5;
 let rectMemory;
 let colorMemory;
 const initGraphics = (graphics, wasm) => {
-  rectMemory = new Int32Array(wasm.memory.buffer, graphics.draw_rects_ptr(), MAX_DRAW_ARRAY_SIZE * DRAW_RECT_SIZE);
+  rectMemory = new Float32Array(wasm.memory.buffer, graphics.draw_rects_ptr(), MAX_DRAW_ARRAY_SIZE * DRAW_RECT_SIZE);
   colorMemory = new Uint8Array(wasm.memory.buffer, graphics.draw_action_colors_ptr(), MAX_DRAW_ARRAY_SIZE * DRAW_ACTION_COLOR_SIZE);
 }
 
@@ -45,7 +45,8 @@ const drawGraphics = (ctx, canvas, graphics) => {
     }
 
     let rectStartIndex = rectIndex * DRAW_RECT_SIZE;
-    let rectOrdering = rectMemory[rectStartIndex];
+    // truncate float to int
+    let rectOrdering = rectMemory[rectStartIndex] | 0;
     if (rectOrdering == ordering) {
       let pos_x = rectMemory[rectStartIndex + 1];
       let pos_y = rectMemory[rectStartIndex + 2];
