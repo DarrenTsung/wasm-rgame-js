@@ -24,6 +24,7 @@ $PROJECT_NAME("./$PROJECT_NAME_bg.wasm").then(() => {
 
     let delta_ms = time - prev_time;
     let delta_s = delta_ms / 1000;
+    mouseListenerFinalize();
     application.tick(graphics, delta_s);
     mouseListenerPostTick();
 
