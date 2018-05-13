@@ -5,10 +5,11 @@ const MOUSE_EVENT_MAX = 100;
 const MOUSE_EVENT_SIZE = 4;
 
 const MOUSE_EVENT_TYPE_NONE = 0;
-const MOUSE_EVENT_TYPE_CLICK = 1;
-const MOUSE_EVENT_TYPE_MOVE = 2;
-const MOUSE_EVENT_TYPE_OVER = 3;
-const MOUSE_EVENT_TYPE_OUT = 4;
+const MOUSE_EVENT_TYPE_DOWN = 1;
+const MOUSE_EVENT_TYPE_UP = 2;
+const MOUSE_EVENT_TYPE_MOVE = 3;
+const MOUSE_EVENT_TYPE_OVER = 4;
+const MOUSE_EVENT_TYPE_OUT = 5;
 
 const MOUSE_DEBUG = false;
 
@@ -17,9 +18,14 @@ let mouseEventsMemory;
 const initMouseListener = (application, canvas, wasm) => {
   mouseEventsMemory = new Uint32Array(wasm.memory.buffer, application.mouse_events_ptr(), MOUSE_EVENT_MAX);
 
-  canvas.addEventListener('click', function(evt) {
-    if (MOUSE_DEBUG) { console.log("MouseClick - %O", evt); }
-    addMouseEvent(canvas, evt, MOUSE_EVENT_TYPE_CLICK);
+  canvas.addEventListener('mousedown', function(evt) {
+    if (MOUSE_DEBUG) { console.log("MouseDown - %O", evt); }
+    addMouseEvent(canvas, evt, MOUSE_EVENT_TYPE_DOWN);
+  }, false);
+
+  canvas.addEventListener('mouseup', function(evt) {
+    if (MOUSE_DEBUG) { console.log("MouseUp - %O", evt); }
+    addMouseEvent(canvas, evt, MOUSE_EVENT_TYPE_UP);
   }, false);
 
   canvas.addEventListener('mouseover', function(evt) {
@@ -56,7 +62,7 @@ function addMouseEvent(canvas, evt, eventType) {
   var mousePosition = getMousePosition(canvas, evt);
   if (MOUSE_DEBUG) { console.log("Start Index: %O | Mouse Position: %O | Event Type: %O", startIndex, mousePosition, eventType); }
   mouseEventsMemory[startIndex] = eventType;
-  mouseEventsMemory[startIndex + 1] = evt.buttons;
+  mouseEventsMemory[startIndex + 1] = evt.which;
   mouseEventsMemory[startIndex + 2] = mousePosition.x * 1000;
   mouseEventsMemory[startIndex + 3] = mousePosition.y * 1000;
 
