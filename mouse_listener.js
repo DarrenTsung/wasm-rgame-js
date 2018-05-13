@@ -69,6 +69,11 @@ function getMousePosition(canvas, evt) {
   let x = evt.clientX - rect.left;
   let y = evt.clientY - rect.top;
 
+  // Sometimes x / y can go out of bounds because of MouseOut events
+  // but this breaks the interface types (u32)
+  x = Math.min(canvas.width, Math.max(0, x));
+  y = Math.min(canvas.height, Math.max(0, y));
+
   // The native canvas starts from top-left as (0, 0)
   // Let's flip the y axis so that it starts from bottom-left (sanely)
   y = canvas.height - y;
