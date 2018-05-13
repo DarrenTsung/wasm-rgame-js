@@ -54,6 +54,7 @@ function addMouseEvent(canvas, evt, event_type) {
   let startIndex = mouseEventsIndex * MOUSE_EVENT_SIZE;
 
   var mousePosition = getMousePosition(canvas, evt);
+  if (MOUSE_DEBUG) { console.log("Mouse Position: %O", mousePosition); }
   mouseEventsMemory[startIndex] = event_type;
   mouseEventsMemory[startIndex + 1] = evt.buttons;
   mouseEventsMemory[startIndex + 2] = mousePosition.x * 1000;
@@ -64,8 +65,13 @@ function addMouseEvent(canvas, evt, event_type) {
 
 function getMousePosition(canvas, evt) {
   var rect = canvas.getBoundingClientRect();
-  return {
-    x: evt.clientX - rect.left,
-    y: evt.clientY - rect.top
-  };
+
+  let x = evt.clientX - rect.left;
+  let y = evt.clientY - rect.top;
+
+  // The native canvas starts from top-left as (0, 0)
+  // Let's flip the y axis so that it starts from bottom-left (sanely)
+  y = canvas.height - y;
+
+  return { x: x, y: y };
 }

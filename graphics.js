@@ -52,6 +52,10 @@ const drawGraphics = (ctx, canvas, graphics) => {
       let width = rectMemory[rectStartIndex + 3];
       let height = rectMemory[rectStartIndex + 4];
 
+      // The native canvas renders from top-left as (0, 0)
+      // Let's flip the y axis so that it renders from bottom-left (sanely)
+      pos_y = canvas.height - pos_y - height;
+
       if (GRAPHICS_DEBUG) { console.log("DrawRect " + "| offset: " + offset + "| pos_x: " + pos_x + "| pos_y: " + pos_y + "| width: " + width + "| height: " + height); }
       ctx.fillRect(pos_x, pos_y, width, height);
 
