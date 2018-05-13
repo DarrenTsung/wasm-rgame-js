@@ -50,12 +50,12 @@ const mouseListenerPostTick = () => {
   mouseEventsIndex = 0;
 }
 
-function addMouseEvent(canvas, evt, event_type) {
+function addMouseEvent(canvas, evt, eventType) {
   let startIndex = mouseEventsIndex * MOUSE_EVENT_SIZE;
 
   var mousePosition = getMousePosition(canvas, evt);
-  if (MOUSE_DEBUG) { console.log("Mouse Position: %O", mousePosition); }
-  mouseEventsMemory[startIndex] = event_type;
+  if (MOUSE_DEBUG) { console.log("Start Index: %O | Mouse Position: %O | Event Type: %O", startIndex, mousePosition, eventType); }
+  mouseEventsMemory[startIndex] = eventType;
   mouseEventsMemory[startIndex + 1] = evt.buttons;
   mouseEventsMemory[startIndex + 2] = mousePosition.x * 1000;
   mouseEventsMemory[startIndex + 3] = mousePosition.y * 1000;
