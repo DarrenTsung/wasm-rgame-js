@@ -73,7 +73,7 @@ const drawGraphics = (ctx, canvas, graphics) => {
       // Let's flip the y axis so that it renders from bottom-left (sanely)
       pos_y = canvas.height - pos_y - height;
 
-      if (GRAPHICS_DEBUG) { console.log("DrawRect " + "| pos_x: " + pos_x + "| pos_y: " + pos_y + "| width: " + width + "| height: " + height); }
+      if (GRAPHICS_DEBUG) { console.log("DrawRect (ordering: " + ordering + ") " + "| pos_x: " + pos_x + "| pos_y: " + pos_y + "| width: " + width + "| height: " + height); }
       ctx.fillRect(pos_x, pos_y, width, height);
 
       rectIndex++;
@@ -90,14 +90,14 @@ const drawGraphics = (ctx, canvas, graphics) => {
       let lastIndex;
       for (lastIndex = stringIndex; stringMemory[lastIndex] != 0; lastIndex++);
       let data = stringMemory.slice(stringIndex, lastIndex);
-      stringIndex = lastIndex;
+      stringIndex = lastIndex + 1;
 
       let string = stringFromUTF8Array(data);
       if (string == null) {
         console.log("Failed to parse string from raw data! Investigate this.");
       }
 
-      if (GRAPHICS_DEBUG) { console.log("DrawString | string: " + string + " | pos_x: " + pos_x + " | pos_y: " + pos_y + " | fontSize: " + fontSize); }
+      if (GRAPHICS_DEBUG) { console.log("DrawString (ordering: " + ordering + ") | string: " + string + " | pos_x: " + pos_x + " | pos_y: " + pos_y + " | fontSize: " + fontSize); }
 
       let fontText = fontSize.toFixed(2) + 'px sans-serif';
       if (ctx.font != fontText) {
