@@ -101,7 +101,7 @@ const drawGraphics = (ctx, canvas, graphics) => {
 
       if (GRAPHICS_DEBUG) { console.log("DrawString (ordering: " + ordering + ") | string: " + string + " | pos_x: " + pos_x + " | pos_y: " + pos_y + " | fontSize: " + fontSize); }
 
-      let fontText = fontSize.toFixed(2) + 'px sans-serif';
+      let fontText = fontSize.toFixed(2) + 'px Cuprum';
       if (ctx.font != fontText) {
         ctx.font = fontText;
       }
