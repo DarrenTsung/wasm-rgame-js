@@ -1,11 +1,12 @@
-// NOTE: These must match in application.rs
+// NOTE: These must match in canvas.rs
 const CANVAS_WIDTH_INDEX = 0;
 const CANVAS_HEIGHT_INDEX = 1;
 
 let canvasPropertiesMemory;
 const initCanvasConfig = (application, canvas, wasm) => {
   canvasPropertiesMemory = new Uint32Array(wasm.memory.buffer, application.canvas_properties_ptr(), 2);
-  updateCanvasConfig(canvas)
+  canvasPropertiesMemory[CANVAS_WIDTH_INDEX] = canvas.width;
+  canvasPropertiesMemory[CANVAS_HEIGHT_INDEX] = canvas.height;
 }
 
 const updateCanvasConfig = (canvas) => {
