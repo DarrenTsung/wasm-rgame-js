@@ -63,7 +63,9 @@ const drawGraphics = (ctx, canvas, graphics) => {
     let rectOrdering = rectMemory[rectStartIndex] | 0;
     let stringPropertyOrdering = stringPropertyMemory[stringPropertyStartIndex] | 0;
 
-    if (rectOrdering == ordering) {
+    if (GRAPHICS_DEBUG) { console.log("Looking for ordering: " + ordering + " | stringPropertyIndex: " + stringPropertyIndex + " | rectIndex: " + rectIndex + " | rectMemory[rectStartIndex]: " + rectMemory[rectStartIndex] + " | stringPropertyMemory[stringPropertyStartIndex]: " + stringPropertyMemory[stringPropertyStartIndex]); }
+
+    if (rectIndex < rectArrayLength && rectOrdering == ordering) {
       let pos_x = rectMemory[rectStartIndex + 1];
       let pos_y = rectMemory[rectStartIndex + 2];
       let width = rectMemory[rectStartIndex + 3];
@@ -77,7 +79,7 @@ const drawGraphics = (ctx, canvas, graphics) => {
       ctx.fillRect(pos_x, pos_y, width, height);
 
       rectIndex++;
-    } else if (stringPropertyOrdering == ordering) {
+    } else if (stringPropertyIndex < stringArrayLength && stringPropertyOrdering == ordering) {
       let pos_x = stringPropertyMemory[stringPropertyStartIndex + 1];
       let pos_y = stringPropertyMemory[stringPropertyStartIndex + 2];
       let fontSize = stringPropertyMemory[stringPropertyStartIndex + 3];
