@@ -8,6 +8,7 @@ const MAX_STRING_ARRAY_SIZE = 1000;
 const DRAW_RECT_SIZE = 5;
 const DRAW_ACTION_COLOR_SIZE = 5;
 const STRING_PROPERTIES_SIZE = 4;
+const DRAW_ROTATION_SIZE = 2;
 
 let rectMemory;
 let stringMemory;
@@ -19,6 +20,7 @@ const initGraphics = (graphics, wasm) => {
   stringMemory = new Uint8Array(wasm.memory.buffer, graphics.strings_ptr(), MAX_STRING_ARRAY_SIZE);
   stringPropertyMemory = new Float32Array(wasm.memory.buffer, graphics.string_properties_ptr(), MAX_DRAW_ARRAY_SIZE * STRING_PROPERTIES_SIZE);
   colorMemory = new Uint8Array(wasm.memory.buffer, graphics.draw_action_colors_ptr(), MAX_DRAW_ARRAY_SIZE * DRAW_ACTION_COLOR_SIZE);
+  rotationsMemory = new Float32Array(wasm.memory.buffer, graphics.rotations_ptr(), MAX_DRAW_ARRAY_SIZE * DRAW_ROTATION_SIZE);
 }
 
 const drawGraphics = (ctx, canvas, graphics) => {
@@ -37,6 +39,7 @@ const drawGraphics = (ctx, canvas, graphics) => {
   let stringPropertyIndex = 0;
   let stringIndex = 0;
   let colorIndex = 0;
+  let rotationIndex = 0;
 
   let endOrdering = rectArrayLength + stringArrayLength;
   for (let ordering = 1; ordering <= endOrdering; ordering++) {
@@ -55,6 +58,18 @@ const drawGraphics = (ctx, canvas, graphics) => {
 
         colorIndex++;
       }
+    }
+
+    let angle = 0.0;
+    let set_angle = false;
+
+    let rotationStartIndex = rotationIndex * DRAW_ROTATION_SIZE;
+    let rotationOrdering = rotationsMemory[rotationStartIndex];
+    if (rotationOrdering == ordering) {
+      angle = rotationsMemory[rotationStartIndex + 1];
+      set_angle = true;
+
+      rotationIndex++;
     }
 
     let stringPropertyStartIndex = stringPropertyIndex * STRING_PROPERTIES_SIZE;
@@ -76,7 +91,15 @@ const drawGraphics = (ctx, canvas, graphics) => {
       pos_y = canvas.height - pos_y - height;
 
       if (GRAPHICS_DEBUG) { console.log("DrawRect (ordering: " + ordering + ") " + "| pos_x: " + pos_x + "| pos_y: " + pos_y + "| width: " + width + "| height: " + height); }
-      ctx.fillRect(pos_x, pos_y, width, height);
+
+      let half_width = (width / 2.0);
+      let half_height = (height / 2.0);
+
+      let center_x = pos_x + half_width;
+      let center_y = pos_y + half_height;
+      ctx.translate(center_x, center_y);
+      if (set_angle) { ctx.rotate(angle * Math.PI / 180); }
+      ctx.fillRect(-half_width, -half_height, width, height);
 
       rectIndex++;
     } else if (stringPropertyIndex < stringArrayLength && stringPropertyOrdering == ordering) {
@@ -106,6 +129,9 @@ const drawGraphics = (ctx, canvas, graphics) => {
         ctx.font = fontText;
       }
 
+      // TODO (darren): rotation does not work perfectly for strings
+      // ctx.translate(pos_x, pos_y);
+      // if (set_angle) { ctx.rotate(angle * Math.PI / 180); }
       ctx.fillText(string, pos_x, pos_y);
 
       stringPropertyIndex++;
@@ -114,6 +140,9 @@ const drawGraphics = (ctx, canvas, graphics) => {
       // reached its limit and reallocated? Reducing buffer size fixed this.
       throw new Error("Failed to find ordering in rect / string arrays! This is not good, investigate!");
     }
+
+    // reset current transformation matrix to the identity matrix
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
   }
 
   ctx.stroke();
